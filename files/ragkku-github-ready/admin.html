@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAGKKU Admin - Upload Dokumen</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            margin: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .auth-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .auth-section.authenticated {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #667eea;
+            background: #e3f2fd;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-preview {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        .file-details h4 {
+            margin: 0;
+            color: #333;
+        }
+
+        .file-details p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #764ba2;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .upload-area {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> RAGKKU Admin</h1>
+            <p>Upload dan kelola dokumen untuk sistem RAG</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div id="authSection" class="auth-section">
+            <h3><i class="fas fa-lock"></i> Autentikasi Admin</h3>
+            <div class="input-group">
+                <label for="adminPassword">Password Admin:</label>
+                <input type="password" id="adminPassword" placeholder="Masukkan password admin">
+            </div>
+            <button id="loginBtn" class="btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+        </div>
+
+        <!-- Upload Section -->
+        <div id="uploadSection" style="display: none;">
+            <div class="upload-section">
+                <h3><i class="fas fa-cloud-upload-alt"></i> Upload Dokumen</h3>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <div class="upload-text">
+                        Drag & drop file atau klik untuk browse
+                    </div>
+                    <div class="upload-hint">
+                        Mendukung: PDF, CSV, TXT (Max: 10MB)
+                    </div>
+                </div>
+
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.csv,.txt">
+                
+                <div id="filePreview" class="file-preview">
+                    <div class="file-info">
+                        <div class="file-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="file-details">
+                            <h4 id="fileName"></h4>
+                            <p id="fileSize"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p>Memproses dokumen...</p>
+                </div>
+
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="uploadBtn" class="btn" disabled>
+                        <i class="fas fa-upload"></i> Upload Dokumen
+                    </button>
+                    <button id="clearBtn" class="btn btn-secondary" style="margin-left: 10px;">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+
+                <div id="statusMessage" class="status-message"></div>
+            </div>
+
+            <!-- Upload History -->
+            <div class="upload-section">
+                <h3><i class="fas fa-history"></i> Riwayat Upload</h3>
+                <div id="uploadHistory">
+                    <p style="color: #666; text-align: center;">Belum ada dokumen yang diupload</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="chat.html"><i class="fas fa-comments"></i> Chat Interface</a>
+            <a href="#" id="logoutBtn" style="display: none;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            adminPassword: 'admin123', // Ganti dengan password yang aman
+            apiUrl: 'https://n8n.yanwarpro.my.id/webhook/ragkku/upload',
+            formApiUrl: 'https://n8n.yanwarpro.my.id/form/82848bc4-5ea2-4e5a-8bb6-3c09b94a8c5d',
+            maxFileSize: 10 * 1024 * 1024 // 10MB
+        };
+
+        // Elements
+        const authSection = document.getElementById('authSection');
+        const uploadSection = document.getElementById('uploadSection');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const filePreview = document.getElementById('filePreview');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const statusMessage = document.getElementById('statusMessage');
+        const uploadHistory = document.getElementById('uploadHistory');
+
+        let selectedFile = null;
+        let uploadHistoryData = JSON.parse(localStorage.getItem('uploadHistory') || '[]');
+
+        // Check if already authenticated
+        if (localStorage.getItem('adminAuthenticated') === 'true') {
+            showUploadSection();
+        }
+
+        // Authentication
+        loginBtn.addEventListener('click', () => {
+            if (adminPassword.value === CONFIG.adminPassword) {
+                localStorage.setItem('adminAuthenticated', 'true');
+                showUploadSection();
+                showStatus('Login berhasil!', 'success');
+            } else {
+                showStatus('Password salah!', 'error');
+                adminPassword.value = '';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('adminAuthenticated');
+            showAuthSection();
+        });
+
+        // Enter key for login
+        adminPassword.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loginBtn.click();
+            }
+        });
+
+        function showUploadSection() {
+            authSection.style.display = 'none';
+            uploadSection.style.display = 'block';
+            authSection.classList.add('authenticated');
+            logoutBtn.style.display = 'inline';
+            loadUploadHistory();
+        }
+
+        function showAuthSection() {
+            authSection.style.display = 'block';
+            uploadSection.style.display = 'none';
+            authSection.classList.remove('authenticated');
+            logoutBtn.style.display = 'none';
+            adminPassword.value = '';
+        }
+
+        // File upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+
+        fileInput.addEventListener('change', (e) => {
+            handleFileSelect(e.target.files[0]);
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        }
+
+        function handleFileSelect(file) {
+            if (!file) return;
+
+            // Validate file type
+            const allowedTypes = ['application/pdf', 'text/csv', 'text/plain'];
+            if (!allowedTypes.includes(file.type)) {
+                showStatus('Tipe file tidak didukung. Gunakan PDF, CSV, atau TXT.', 'error');
+                return;
+            }
+
+            // Validate file size
+            if (file.size > CONFIG.maxFileSize) {
+                showStatus('File terlalu besar. Maksimal 10MB.', 'error');
+                return;
+            }
+
+            selectedFile = file;
+            showFilePreview(file);
+            uploadBtn.disabled = false;
+        }
+
+        function showFilePreview(file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            filePreview.style.display = 'block';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Upload functionality
+        uploadBtn.addEventListener('click', uploadFile);
+        clearBtn.addEventListener('click', clearSelection);
+
+        function clearSelection() {
+            selectedFile = null;
+            fileInput.value = '';
+            filePreview.style.display = 'none';
+            uploadBtn.disabled = true;
+            hideStatus();
+        }
+
+        async function uploadFile() {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            loadingSpinner.style.display = 'block';
+            progressBar.style.display = 'block';
+
+            try {
+                const formData = new FormData();
+                formData.append('field0', selectedFile);
+
+                // Simulate progress
+                simulateProgress();
+
+                // Try form API first (direct upload)
+                let response;
+                try {
+                    response = await fetch(CONFIG.formApiUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+                } catch (formError) {
+                    console.log('Form API failed, trying wrapper API:', formError);
+                    
+                    // Fallback to wrapper API
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        try {
+                            const base64Data = e.target.result.split(',')[1];
+                            const wrapperResponse = await fetch(CONFIG.apiUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    file: base64Data,
+                                    fileName: selectedFile.name,
+                                    mimeType: selectedFile.type
+                                })
+                            });
+                            
+                            if (wrapperResponse.ok) {
+                                const result = await wrapperResponse.json();
+                                showStatus('Dokumen berhasil diupload melalui API wrapper!', 'success');
+                                addToHistory(selectedFile, result);
+                                clearSelection();
+                            } else {
+                                throw new Error('Wrapper API juga gagal');
+                            }
+                        } catch (wrapperError) {
+                            console.error('Wrapper API error:', wrapperError);
+                            showStatus('Upload gagal: ' + wrapperError.message, 'error');
+                        } finally {
+                            uploadBtn.disabled = false;
+                            loadingSpinner.style.display = 'none';
+                            progressBar.style.display = 'none';
+                            progressFill.style.width = '0%';
+                        }
+                    };
+                    reader.readAsDataURL(selectedFile);
+                    return;
+                }
+
+                if (response.ok) {
+                    const result = await response.text(); // Form API returns HTML
+                    showStatus('Dokumen berhasil diupload dan diproses!', 'success');
+                    addToHistory(selectedFile, { status: 'success', message: 'Upload successful' });
+                    clearSelection();
+                } else {
+                    throw new Error('Form upload failed with status: ' + response.status);
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showStatus('Upload gagal: ' + error.message + '. Periksa koneksi dan pastikan n8n workflow aktif.', 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+                progressBar.style.display = 'none';
+                progressFill.style.width = '0%';
+            }
+        }
+
+        function simulateProgress() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 30;
+                if (progress >= 90) {
+                    progress = 90;
+                    clearInterval(interval);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+        }
+
+        function addToHistory(file, result) {
+            const historyItem = {
+                fileName: file.name,
+                fileSize: formatFileSize(file.size),
+                uploadDate: new Date().toLocaleString('id-ID'),
+                status: 'success'
+            };
+
+            uploadHistoryData.unshift(historyItem);
+            if (uploadHistoryData.length > 10) {
+                uploadHistoryData = uploadHistoryData.slice(0, 10);
+            }
+
+            localStorage.setItem('uploadHistory', JSON.stringify(uploadHistoryData));
+            loadUploadHistory();
+        }
+
+        function loadUploadHistory() {
+            if (uploadHistoryData.length === 0) {
+                uploadHistory.innerHTML = '<p style="color: #666; text-align: center;">Belum ada dokumen yang diupload</p>';
+                return;
+            }
+
+            const historyHtml = uploadHistoryData.map(item => `
+                <div style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px; background: #f9f9f9;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${item.fileName}</strong>
+                            <div style="color: #666; font-size: 0.9em;">${item.fileSize} • ${item.uploadDate}</div>
+                        </div>
+                        <div style="color: #28a745;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            uploadHistory.innerHTML = historyHtml;
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message status-${type}`;
+            statusMessage.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(hideStatus, 5000);
+            }
+        }
+
+        function hideStatus() {
+            statusMessage.style.display = 'none';
+        }
+
+        // Load history on page load
+        loadUploadHistory();
+    </script>
+</body>
+</html>
