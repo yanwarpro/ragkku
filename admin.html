@@ -714,6 +714,13 @@
         async function uploadFile() {
             if (selectedFiles.length === 0) return;
 
+            // Set all existing history items to inactive before new upload
+            let uploadHistoryData = JSON.parse(localStorage.getItem('uploadHistory')) || [];
+            uploadHistoryData.forEach(item => {
+                item.isActive = false;
+            });
+            localStorage.setItem('uploadHistory', JSON.stringify(uploadHistoryData));
+
             uploadBtn.disabled = true;
             loadingSpinner.style.display = 'block';
             progressBar.style.display = 'block';
@@ -847,13 +854,15 @@
 
         function addToHistory(file, result) {
             const now = new Date();
+
             const historyItem = {
                 fileName: file.name,
                 fileSize: formatFileSize(file.size),
                 uploadDate: now.toLocaleString('id-ID'),
                 timestamp: now.getTime(),
                 status: result.status || 'success',
-                method: result.method || currentMethod
+                method: result.method || currentMethod,
+                isActive: true // File yang baru diupload selalu aktif
             };
 
             uploadHistoryData.unshift(historyItem);
@@ -867,17 +876,17 @@
 
         function loadUploadHistory() {
             if (uploadHistoryData.length === 0) {
-                uploadHistory.innerHTML = '<p style="color: #666; text-align: center;">Belum ada dokumen yang diupload</p>';
+                uploadHistory.innerHTML = '<p style="text-align: center; color: #666;">Belum ada dokumen yang diupload.</p>';
                 return;
             }
 
             // Mendapatkan tanggal hari ini
             const today = new Date();
             today.setHours(0, 0, 0, 0); // Reset jam ke 00:00:00
-            
+
             // Mendapatkan tanggal kemarin
             const yesterday = new Date(today);
-            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday.setDate(today.getDate() - 1);
             
             let historyHtml = '';
             let lastDate = null;
@@ -921,11 +930,11 @@
                             <strong>${item.fileName}</strong>
                             <div style="color: #666; font-size: 0.9em;">
                                 ${item.fileSize} • ${item.uploadDate} • 
-                                <span style="color: #667eea;">${item.method || 'form'}</span>
+                                <span style="color: ${item.isActive ? '#667eea' : '#999'};">${item.method || 'form'}</span>
                             </div>
                         </div>
-                        <div style="color: #28a745;">
-                            <i class="fas fa-check-circle"></i>
+                        <div style="color: ${item.isActive ? '#28a745' : '#999'};">
+                            <i class="fas ${item.isActive ? 'fa-check-circle' : 'fa-minus-circle'}"></i>
                         </div>
                     </div>
                 </div>
