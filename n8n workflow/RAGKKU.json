@@ -1,0 +1,315 @@
+{
+  "name": "RAGKKU",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Upload or Replace Documents",
+        "formDescription": "⚠️ PERHATIAN: Setiap upload baru akan MENGGANTI semua dokumen lama!\n\nUntuk menambah dokumen tanpa menghapus yang lama, silakan upload semua file sekaligus (bisa multi-select).",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Upload File(s)",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf, .csv, .txt, .docx, .doc",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        384,
+        -16
+      ],
+      "id": "9fa5ff10-594c-4ec6-a9a4-1793f5a0a70f",
+      "name": "Upload your file here",
+      "webhookId": "82848bc4-5ea2-4e5a-8bb6-3c09b94a8c5d"
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        176
+      ],
+      "id": "8bd8fbe4-9c4e-4ed4-975a-f51fc46b6891",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "content": "### 📖 Cara Pakai RAGKKU\n\n**Upload/Replace Dokumen:**\n1. Klik tombol form upload di workflow ini\n2. Pilih file(s) yang mau di-upload\n3. ⚠️ PENTING: Setiap upload BARU akan MENGGANTI semua data lama!\n\n**Multi-file Upload:**\n- Bisa upload beberapa file sekaligus\n- File yang di-support: .pdf, .csv, .txt, .docx, .doc\n\n**Chat dengan Data:**\n- Klik 'Open Chat' untuk mulai ngobrol dengan Clara\n- Clara akan jawab berdasarkan dokumen yang sudah di-upload\n\nDocs: [RAG in n8n](https://docs.n8n.io/advanced-ai/rag-in-n8n/)",
+        "height": 360,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "125d7ae6-2f5b-41de-9b59-d8add9407a45",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "### 📚 Load Data Flow",
+        "height": 460,
+        "width": 700,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        336,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "8922bde5-98d9-48ac-a203-f04b3ddb1c1b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": {
+          "__rl": true,
+          "value": "vector_store_key",
+          "mode": "list",
+          "cachedResultName": "vector_store_key"
+        },
+        "clearStore": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        -16
+      ],
+      "id": "4f8e851c-ca64-4841-8b17-097652d5e889",
+      "name": "Insert Data to Store"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "knowledge_base",
+        "toolDescription": "Use this knowledge base to answer questions from the user",
+        "memoryKey": {
+          "__rl": true,
+          "mode": "list",
+          "value": "vector_store_key"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.2,
+      "position": [
+        1664,
+        192
+      ],
+      "id": "5b048cfe-9c80-45fa-979e-8486a4702ce2",
+      "name": "Query Data Tool"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Kamu adalah asisten Yanwar bernama Clara, kamu bertugas menjawab semua chat dengan sopan dan playfull berdasarkan dokumen yang sudah di upload.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "9a89bec3-31f5-42b7-a7ee-07de7c88810c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        -16
+      ],
+      "id": "2c9b95e9-a948-47a9-8f08-5b6490dcb0d6",
+      "name": "When chat message received",
+      "webhookId": "d744b523-7378-49a5-9696-bf381ff6221f"
+    },
+    {
+      "parameters": {
+        "content": "### 🐕 2. Retriever Flow",
+        "height": 460,
+        "width": 792,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "eb010b76-6a50-4293-b670-ad70f5d408d5",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "### Embeddings\n\nThe Insert and Retrieve operation use the same embedding node.\n\nThis is to ensure that they are using the **exact same embeddings and settings**.\n\nDifferent embeddings might not work at all, or have unintended consequences.\n",
+        "height": 240,
+        "width": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        496
+      ],
+      "typeVersion": 1,
+      "id": "6f9e4f51-9424-440b-88d3-ffd7e5211c7b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        704,
+        528
+      ],
+      "id": "da42980f-44e8-446e-99c7-b9a85e5b941f",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "UAsQap5Oexb0ZvlZ",
+          "name": "Google Gemini(PaLM) Api yanwar.pro2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        208
+      ],
+      "id": "b4581c6f-35de-4026-a9fe-50958874f8c6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "UAsQap5Oexb0ZvlZ",
+          "name": "Google Gemini(PaLM) Api yanwar.pro2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Upload your file here": {
+      "main": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Data Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert Data to Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Query Data Tool",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Data to Store": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "executionOrder": "v1"
+  },
+  "versionId": "71584239-f04d-4e60-a172-73331474d348",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4ec598307d2bd451392b219bf9df7cf0811a365fd2205518ce8aca46a4ed86e"
+  },
+  "id": "4PfNXLAIlYe1Ypoj",
+  "tags": []
+}

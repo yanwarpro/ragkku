@@ -1,0 +1,228 @@
+{
+  "name": "RAGKKU API Wrapper",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "67b6ee28-4270-42ba-ba47-85f8e8dd92e7",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "rawBody": false,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://ragkku.netlify.app, http://localhost:3000"
+              }
+            ]
+          }
+        }
+      },
+      "id": "webhook-upload",
+      "name": "Upload Document API",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        240,
+        208
+      ],
+      "typeVersion": 2,
+      "webhookId": "67b6ee28-4270-42ba-ba47-85f8e8dd92e7"
+    },
+    {
+      "parameters": {
+        "path": "d744b523-7378-49a5-9696-bf381ff6221f/chat",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "rawBody": false,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://ragkku.netlify.app, http://localhost:3000"
+              }
+            ]
+          }
+        }
+      },
+      "id": "webhook-chat",
+      "name": "Chat API",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        240,
+        400
+      ],
+      "typeVersion": 2,
+      "webhookId": "63e483df-a27e-4772-b764-e54d831d5509"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.yanwarpro.my.id/form/82848bc4-5ea2-4e5a-8bb6-3c09b94a8c5d",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\"file\": $json.file}) }}",
+        "options": {
+          "allowUnauthorizedCerts": false,
+          "timeout": 30000
+        }
+      },
+      "id": "http-upload",
+      "name": "Call RAGKKU Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        464,
+        208
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "https://n8n.yanwarpro.my.id/webhook/d744b523-7378-49a5-9696-bf381ff6221f/chat",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "http-chat",
+      "name": "Call RAGKKU Chat",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        464,
+        400
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"success\", \"message\": \"Document uploaded successfully\", \"data\": $json } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "=https://ragkku.netlify.app, http://localhost:3000"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "response-upload",
+      "name": "Upload Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        688,
+        208
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"success\", \"response\": $json.response || $json.output, \"timestamp\": new Date().toISOString() } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "response-chat",
+      "name": "Chat Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        688,
+        400
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "content": "## I'm a note \nChat respond webhook default: https://n8n.yanwarpro.my.id/webhook/4091fa09-fb9a-4039-9411-7104d213f601"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        592
+      ],
+      "typeVersion": 1,
+      "id": "c595f448-cba9-4ed6-92de-496d7a85ff08",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Upload Document API": {
+      "main": [
+        [
+          {
+            "node": "Call RAGKKU Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat API": {
+      "main": [
+        [
+          {
+            "node": "Call RAGKKU Chat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call RAGKKU Upload": {
+      "main": [
+        [
+          {
+            "node": "Upload Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call RAGKKU Chat": {
+      "main": [
+        [
+          {
+            "node": "Chat Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "c30b2fc5-d1b2-4ff4-a8a5-d9603a02cfc5",
+  "meta": {
+    "instanceId": "e4ec598307d2bd451392b219bf9df7cf0811a365fd2205518ce8aca46a4ed86e"
+  },
+  "id": "0pzgEmu5THdGEbH8",
+  "tags": []
+}
