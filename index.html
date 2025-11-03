@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAGKKU - Document AI Chat System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            padding: 60px 0;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.5em;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .header .description {
+            font-size: 1.1em;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .features-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin: 40px 0;
+            padding: 60px 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 30px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 35px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .tech-stack {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin: 40px 0;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .tech-stack h3 {
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .tech-item {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            background: #e9ecef;
+            transform: translateY(-5px);
+        }
+
+        .tech-item i {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer a:hover {
+            opacity: 0.8;
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            margin: 40px 0;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .demo-video {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 60px;
+            margin: 20px 0;
+            border: 2px dashed #ddd;
+        }
+
+        .demo-video i {
+            font-size: 4em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-radius: 20px;
+            color: #28a745;
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            font-size: 0.9em;
+            color: #555;
+            background-color: white;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .header .subtitle {
+                font-size: 1.2em;
+            }
+            
+            .features-section,
+            .tech-stack,
+            .demo-section {
+                padding: 40px 20px;
+                margin: 20px 0;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-robot"></i> RAGKKU</h1>
+            <div class="subtitle">Document AI Chat System</div>
+            <div class="description">
+                Sistem AI yang memungkinkan Anda untuk berkomunikasi dengan dokumen. 
+                Upload dokumen Anda dan ajukan pertanyaan apapun - AI akan memberikan jawaban berdasarkan isi dokumen tersebut.
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                Sistem Online & Siap Digunakan
+            </div>
+        </div>
+
+        <div class="features-section">
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="feature-title">Upload Dokumen</div>
+                    <div class="feature-description">
+                        Mendukung berbagai format dokumen seperti PDF, CSV, dan TXT. 
+                        Sistem akan secara otomatis memproses dan mengindeks isi dokumen.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="feature-title">AI yang Cerdas</div>
+                    <div class="feature-description">
+                        Menggunakan Google Gemini AI terbaru untuk memberikan jawaban yang akurat 
+                        dan kontekstual berdasarkan isi dokumen yang diupload.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="feature-title">Chat Interface</div>
+                    <div class="feature-description">
+                        Interface chat yang intuitif dan responsif. Ajukan pertanyaan dalam bahasa Indonesia 
+                        dan dapatkan jawaban yang mudah dipahami.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="feature-title">Pencarian Cerdas</div>
+                    <div class="feature-description">
+                        Sistem RAG (Retrieval Augmented Generation) yang dapat mencari informasi 
+                        relevan dari dokumen dengan akurasi tinggi.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-title">Aman & Privat</div>
+                    <div class="feature-description">
+                        Dokumen Anda diproses dengan aman. Data disimpan sementara dan 
+                        tidak dibagikan dengan pihak ketiga.
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="feature-title">Mobile Friendly</div>
+                    <div class="feature-description">
+                        Dapat diakses dari perangkat apapun - desktop, tablet, atau smartphone 
+                        dengan pengalaman yang optimal.
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="chat.html" class="btn btn-primary">
+                    <i class="fas fa-comments"></i>
+                    Mulai Chat Sekarang
+                </a>
+                <a href="admin.html" class="btn btn-secondary">
+                    <i class="fas fa-cog"></i>
+                    Admin Panel
+                </a>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>Cara Menggunakan RAGKKU</h3>
+            <div class="demo-video">
+                <i class="fas fa-play-circle"></i>
+                <h4>Demo Video (Coming Soon)</h4>
+                <p>Video tutorial cara menggunakan RAGKKU akan segera tersedia</p>
+            </div>
+            
+            <div style="text-align: left; max-width: 600px; margin: 0 auto;">
+                <h4 style="margin-bottom: 20px; text-align: center;">Langkah-langkah:</h4>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                        <div>Login ke Admin Panel dan upload dokumen Anda</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                        <div>Tunggu proses indexing dokumen selesai</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                        <div>Buka Chat Interface dan mulai bertanya</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">4</div>
+                        <div>Dapatkan jawaban cerdas dari AI berdasarkan dokumen Anda</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-stack">
+            <h3>Teknologi yang Digunakan</h3>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <i class="fab fa-google"></i>
+                    <h4>Google Gemini AI</h4>
+                    <p>Language Model Terbaru</p>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-cogs"></i>
+                    <h4>n8n Automation</h4>
+                    <p>Backend Workflow</p>
+                </div>
+                <div class="tech-item">
+                    <i class="fas fa-database"></i>
+                    <p>Vector Database</p>
+                    <p>RAG System</p>
+                </div>
+                <div class="tech-item">
+                    <i class="fab fa-html5"></i>
+                    <h4>Modern Web</h4>
+                    <p>HTML5, CSS3, JavaScript</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container">
+            <p>&copy; 2025 RAGKKU. Powered by Google Gemini AI & n8n.</p>
+            <div style="margin-top: 15px;">
+                <a href="admin.html"><i class="fas fa-cog"></i> Admin</a>
+                <a href="chat.html"><i class="fas fa-comments"></i> Chat</a>
+                <a href="#" onclick="showInfo()"><i class="fas fa-info-circle"></i> Info</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate feature cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                observer.observe(card);
+            });
+
+            // checkSystemStatus();
+            // checkSystemStatus();
+        });
+
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch('https://n8n.yanwarpro.my.id/webhook/ragkku/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: 'status check' })
+                });
+                
+                const statusIndicator = document.querySelector('.status-indicator');
+                if (response.ok) {
+                    statusIndicator.innerHTML = `
+                        <div class="status-dot"></div>
+                        Sistem Online & Siap Digunakan
+                    `;
+                    statusIndicator.style.background = 'rgba(40, 167, 69, 0.1)';
+                    statusIndicator.style.borderColor = 'rgba(40, 167, 69, 0.3)';
+                    statusIndicator.style.color = '#28a745';
+                } else {
+                    throw new Error('Server error');
+                }
+            } catch (error) {
+                const statusIndicator = document.querySelector('.status-indicator');
+                statusIndicator.innerHTML = `
+                    <div style="width: 8px; height: 8px; background: #dc3545; border-radius: 50%;"></div>
+                    Sistem Sedang Maintenance
+                `;
+                statusIndicator.style.background = 'rgba(220, 53, 69, 0.1)';
+                statusIndicator.style.borderColor = 'rgba(220, 53, 69, 0.3)';
+                statusIndicator.style.color = '#dc3545';
+            }
+        }
+
+        function showInfo() {
+            alert(`RAGKKU - Document AI Chat System
+
+Fitur Utama:
+✓ Upload dokumen (PDF, CSV, TXT)
+✓ Chat dengan AI tentang isi dokumen
+✓ Powered by Google Gemini AI
+✓ Interface yang user-friendly
+✓ Responsive design
+
+Cara Menggunakan:
+1. Upload dokumen via Admin Panel
+2. Tunggu proses indexing
+3. Chat di halaman Chat Interface
+4. Ajukan pertanyaan tentang dokumen
+
+Dikembangkan dengan n8n & Google Gemini AI`);
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
